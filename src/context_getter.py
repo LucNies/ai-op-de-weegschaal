@@ -12,7 +12,9 @@ class ContextGetter(object):
     
     
     def __init__(self, runid, url = 'http://krabspin.uci.ru.nl/getcontext.json/', teamid = 'PyBandits', 
-                 teampw = 'e6e2343579d1d394a9be2d6cc0de9ee0', start = 0, max_calls = 10000):
+                 pass_file = '../password.pass', start = 0, max_calls = 10000):
+        f = open(pass_file, 'rb')
+        teampw = f.next()
         self.url = url        
         self.i = start
         self.max_calls = max_calls
