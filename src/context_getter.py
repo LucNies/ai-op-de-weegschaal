@@ -15,7 +15,7 @@ class ContextGetter(object):
                  pass_file = '../password.pass', start = 0, max_calls = 10000):
         f = open(pass_file, 'rb')
         teampw = f.next()
-        self.url = url        
+        self.url = url
         self.i = start
         self.max_calls = max_calls
         self.arguments = {'i': self.i, 'runid' : runid, 'teamid' : teamid, 'teampw' : teampw }

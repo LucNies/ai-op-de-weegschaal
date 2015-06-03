@@ -39,8 +39,7 @@ for i in range(0,100):
     propose_payload = {'i': i, 'runid': run_id, 'teamid': team_id, 'header': 15, 'adtype': 'square', 'color': 'green', 'productid':11, 'price': 40.0, 'teampw': team_pass}
     response  = requests.get(response_url, params = propose_payload).json()
     responsearray.append(context)
-    #print response
-    print i
+
     
 with open(contextdir, 'w+') as contextfile:
     json.dump(contextarray, contextfile)
@@ -49,9 +48,9 @@ with open(responsedir, 'w+') as responsefile:
 print 'written contexts to ' + contextdir + ' and responses to ' + responsedir + '.'
 
 
-#with open(contextdir) as contextfile:
-#    contextdata = json.load(contextfile)
-#pprint(contextdata)
+with open(contextdir) as contextfile:
+    contextdata = json.load(contextfile)
+pprint(contextdata)
 
 
 

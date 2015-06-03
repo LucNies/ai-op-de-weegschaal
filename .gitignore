@@ -1,1 +1,6 @@
 *.pass
+*.json
+context/*
+*.pyc
+src/context_getter.pyc
+*.pyc
