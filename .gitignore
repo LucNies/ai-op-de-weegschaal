@@ -3,4 +3,5 @@
 context/*
 *.pyc
 src/context_getter.pyc
+src/*.pyc
 *.pyc

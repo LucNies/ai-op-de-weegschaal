@@ -30,6 +30,9 @@ def store(runid, file_path = '../context/', i = 0):
         json.dump(contextarray, contextfile)
 
 if __name__ == '__main__':
-    store(2)
+    
+    #for i in range(75,300):
+     #   print "Bezig met runid: " + str(i)
+    store(300)
 
     
