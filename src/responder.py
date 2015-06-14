@@ -6,6 +6,7 @@ Created on Sun May 31 20:57:58 2015
 """
 import numpy as np
 import requests
+import json
 
 headers = [5, 15, 35]
 adtypes = ['skyscraper', 'square', 'banner']
@@ -19,5 +20,19 @@ def respond(i, runid, teamid = 'PyBandits', teampw = 'e6e2343579d1d394a9be2d6cc0
     response = requests.get(url, params = page).json()
     return response
 
+
+def respond_with_page(i, runid, page, teamid = 'PyBandits', teampw = 'e6e2343579d1d394a9be2d6cc0de9ee0', url = 'http://krabspin.uci.ru.nl/proposePage.json/'):
+    page['teamid']= teamid
+    page['teampw']= teampw
+    page['i']=i
+    page['runid']=runid
+    
+    response = requests.get(url, params = page).json()
+    return response
+
+
+
 if __name__ == '__main__':
-    print respond(1, 10)
+    bla = respond(1, 10)
+    print bla['effect']['Success']
+    
