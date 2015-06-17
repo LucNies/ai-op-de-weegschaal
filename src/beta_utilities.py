@@ -8,6 +8,8 @@ Created on Wed Jun 10 10:55:42 2015
 from __future__ import division
 import numpy as np
 from scipy.stats import beta
+import os
+import csv
 
 headers = [5, 15, 35]
 adtypes = ['skyscraper', 'square', 'banner']
@@ -36,7 +38,7 @@ def draw_from_beta_distributions(alphas, betas):
     max_=0
     
     for i in range(0, (alphas.size-1)):
-        beta_outcome = beta.rvs(alphas[0,i], betas[0,i])
+        beta_outcome = beta.rvs(alphas[i], betas[i])
         
         if  beta_outcome > max_:
             max_ = beta_outcome
@@ -47,23 +49,61 @@ def draw_from_beta_distributions(alphas, betas):
 def update_alphas_betas(index, success, alphas, betas, price):
     
     if success==1:
-        alphas[0,index] = float(alphas[0,index]+1*(price/50))# pas alpha aan naar de prijs van het product
+        alphas[index] = float(alphas[index]+1*(price/50))# pas alpha aan naar de prijs van het product
         
     else:
-        betas[0,index] = float(betas[0,index]+1*(price/50))# niet zeker of het bij de failures ook moet
+        betas[index] = float(betas[index]+1*(price/50))# niet zeker of het bij de failures ook moet
         
     return alphas, betas
     
+def save_ab(runid, i, alphas, betas, file_path = '../data/alpha_beta/'):
+        print 'write alphas and betas to file'        
+        
+        if not os.path.exists(file_path):
+            os.makedirs(file_path)
+
+        filename = file_path + str(runid)        
+        index = np.array(i)
+        np.savez(filename, alphas=alphas, betas=betas, index=index)
+#        if os.path.isfile(filename):
+#            f = open(filename, 'a')
+#        else:
+#            f= open(filename, 'w')
+#        
+#        writer = csv.writer(f)
+#        writer.writerow([i, alphas, betas])
+#        
+#        f.close()
+
+def load_ab(runid, i, file_path = '../data/alpha_beta/'):
+    filename = file_path + str(runid) + ".npz"
+    
+    data = np.load(filename)
+    a = data['alphas']
+    b = data['betas']
+    index = data['index']
+    data.close()
+    return a,b, index
+    
+#    f = open(filename, 'r')
+#    
+#    reader = csv.reader(f)
+#    for row in reader:
+#        if int(row[0]) == i:
+#            f.close()
+#            return row[1], row[2]
+#        
+    
 if __name__ == '__main__':
     
-    headers = [5, 15, 35]
-    adtypes = ['skyscraper', 'square', 'banner']
-    colors = ['green', 'blue', 'red', 'black', 'white']
-    productids = np.arange(10, 26, 1)
-    price = 25   
+    runid = 0
+    i = 0
+    a1 = np.arange(10)
+    b1 = np.arange(10,20)
+    save_ab(runid, i, a1, b1)
+    print load_ab(runid, i)
 
-    possible_pages = create_possible_pages(headers=headers, adtypes=adtypes, colors=colors, productids=productids, price=price) 
-    print len(possible_pages)
+    
     
     
     

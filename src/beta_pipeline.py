@@ -9,7 +9,7 @@ from __future__ import division
 import numpy as np
 import random
 import responder
-import beta_utilities
+import beta_utilities as beta_util
 import util
 
 headers = [5, 15, 35]
@@ -23,32 +23,37 @@ f = open(pass_file, 'rb')
 teampw = f.next() 
 
 # aantal samples waar op getrained wordt
-iterations = 1000
+iterations = 10
 
 #maak pagina's
-possible_pages = beta_utilities.create_possible_pages(headers=headers, adtypes=adtypes, colors=colors, productids=productids, prices=prices) 
+possible_pages = beta_util.create_possible_pages(headers=headers, adtypes=adtypes, colors=colors, productids=productids, prices=prices) 
 
 
 util.update_progress(0)
 print len(possible_pages)
-alphas = np.ones((1, len(possible_pages)))
-betas = np.ones((1, len(possible_pages)))
+alphas = np.ones(len(possible_pages))
+betas = np.ones(len(possible_pages))
 
 revenue = 0
 
 for i in range(0, iterations):
-    randi = random.randint(0,10000)
-    randrunid = random.randint(0,10000)
-    
-    page_index = beta_utilities.draw_from_beta_distributions(alphas=alphas, betas=betas) # welke arm wint
+    randi = 0 #random.randint(0,10000)
+    randrunid = 0 #random.randint(0,10000)
     
     
-    response = responder.respond_with_page(i=randi, runid=randrunid, page = possible_pages[page_index])
+    page_index = beta_util.draw_from_beta_distributions(alphas=alphas, betas=betas) # welke arm wint
+    
+    
+    response = responder.respond_with_page(i=randi, runid=randrunid, page = possible_pages[page_index], teampw = teampw)
     success = response['effect']['Success'] # 1 of 0
     
-    alphas, betas = beta_utilities.update_alphas_betas(index=page_index, success = success, price = possible_pages[page_index]['price'], alphas = alphas, betas = betas)
+    alphas, betas = beta_util.update_alphas_betas(index=page_index, success = success, price = possible_pages[page_index]['price'], alphas = alphas, betas = betas)
     
     revenue = revenue + success*possible_pages[page_index]['price']
+    
+    if i%100 == 0:
+        beta_util.save_ab(randrunid, randi, alphas, betas)
+    
     util.update_progress(i/iterations)
 util.update_progress(1)
     

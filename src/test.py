@@ -8,14 +8,14 @@ Created on Sun May 31 17:16:30 2015
 
 import context_getter
 import responder
-
+from scipy.stats import beta
+import numpy as np
+import matplotlib.pyplot as plt
 
 if __name__ == '__main__':
-    runid = 10
-    for i, context in enumerate(context_getter.ContextGetter(runid, max_calls = 10)):
-        print "context: "
-        print context
-        
-        response = responder.respond(i, runid)
-        print "response: "
-        print response
+    a, b = 1 , 1
+    lijst  = beta.rvs(a,b, size = 1000)
+    print lijst
+    plt.hist(lijst)
+    
+    
