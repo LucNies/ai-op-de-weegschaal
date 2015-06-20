@@ -6,6 +6,8 @@ Created on Wed Jun 03 14:56:14 2015
 """
 
 import sys
+import os
+
 
 
 # update_progress() : Displays or updates a console progress bar
@@ -31,3 +33,30 @@ def update_progress(progress):
     text = "\rPercent: [{0}] {1}% {2}".format( "="*block + "-"*(barLength-block), progress*100, status)
     sys.stdout.write(text)
     sys.stdout.flush()
+				
+				
+def save_profit(revenue, file_path = '../data/revenue/'):
+	
+	if not os.path.exists(file_path):
+		os.makedirs(file_path)
+	
+	filename = file_path + 'revenues.txt'
+	if not os.path.exists(filename):
+		f = open(filename, 'w')
+	else:
+		f = open(filename, 'a')
+		
+	f.write(str(revenue) + '\n')
+	f.close()
+
+def load_profit(filename =  '../data/revenue/revenues.txt'):
+	
+	f = open(filename, 'r')
+	lines = f.readlines();
+	
+	return int(lines[len(lines)-1])
+		
+		
+
+
+print load_profit()

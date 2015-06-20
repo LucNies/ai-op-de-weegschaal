@@ -56,43 +56,27 @@ def update_alphas_betas(index, success, alphas, betas, price):
         
     return alphas, betas
     
-def save_ab(runid, i, alphas, betas, file_path = '../data/alpha_beta/'):
-        print 'write alphas and betas to file'        
+def save_ab(alphas, betas, file_path = '../data/alpha_beta/', i = 0):
+      
         
         if not os.path.exists(file_path):
             os.makedirs(file_path)
 
-        filename = file_path + str(runid)        
-        index = np.array(i)
-        np.savez(filename, alphas=alphas, betas=betas, index=index)
-#        if os.path.isfile(filename):
-#            f = open(filename, 'a')
-#        else:
-#            f= open(filename, 'w')
-#        
-#        writer = csv.writer(f)
-#        writer.writerow([i, alphas, betas])
-#        
-#        f.close()
+        filename = file_path + str(i)        
 
-def load_ab(runid, i, file_path = '../data/alpha_beta/'):
-    filename = file_path + str(runid) + ".npz"
+        np.savez(filename, alphas=alphas, betas=betas)
+
+
+def load_ab(filename = '../data/alpha_beta/0.npz'):
+   
     
     data = np.load(filename)
     a = data['alphas']
     b = data['betas']
-    index = data['index']
     data.close()
-    return a,b, index
+    return a,b
     
-#    f = open(filename, 'r')
-#    
-#    reader = csv.reader(f)
-#    for row in reader:
-#        if int(row[0]) == i:
-#            f.close()
-#            return row[1], row[2]
-#        
+
     
 if __name__ == '__main__':
     
