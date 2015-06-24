@@ -56,7 +56,3 @@ def load_profit(filename =  '../data/revenue/revenues.txt'):
 	
 	return int(lines[len(lines)-1])
 		
-		
-
-
-print load_profit()
