@@ -59,4 +59,4 @@ def load_profit(filename =  '../data/revenue/revenues.txt'):
 		
 
 
-print load_profit()
+#print load_profit()
