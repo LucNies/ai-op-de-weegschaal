@@ -75,7 +75,6 @@ def run(iterations = 350000, filename = '../data/alpha_beta/1.npz'):
          util.update_progress(i/iterations)
 		
 	util.update_progress(1)
-	
-run()
+
     
 

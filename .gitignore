@@ -5,3 +5,7 @@ context/*
 src/context_getter.pyc
 src/*.pyc
 *.pyc
+*.npz
+*.txt
+data/alpha_beta/0.npz
+*.xlsx
