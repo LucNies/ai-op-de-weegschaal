@@ -15,7 +15,7 @@ headers = [5, 15, 35]
 adtypes = ['skyscraper', 'square', 'banner']
 colors = ['green', 'blue', 'red', 'black', 'white']
 productids = np.arange(10, 26, 1)
-prices = [25,35,45]
+prices = [10, 20, 30, 40, 50]
 
 
 
@@ -32,13 +32,13 @@ def create_possible_pages(headers, adtypes, colors, productids, prices):
 
 
 
-def draw_from_beta_distributions(alphas, betas):
+def draw_from_beta_distributions(alphas, betas, possible_pages):
 
     max_id = 0
     max_=0
     
     for i in range(0, (alphas.size-1)):
-        beta_outcome = beta.rvs(alphas[i], betas[i])
+        beta_outcome = float(beta.rvs(alphas[i], betas[i])*float(possible_pages[i]['price']/50))
         
         if  beta_outcome > max_:
             max_ = beta_outcome
@@ -49,10 +49,10 @@ def draw_from_beta_distributions(alphas, betas):
 def update_alphas_betas(index, success, alphas, betas, price):
     
     if success==1:
-        alphas[index] = float(alphas[index]+1*(price/50))# pas alpha aan naar de prijs van het product
+        alphas[index] = float(alphas[index]+1)
         
     else:
-        betas[index] = float(betas[index]+1*(price/50))# niet zeker of het bij de failures ook moet
+        betas[index] = float(betas[index]+1)
         
     return alphas, betas
     
@@ -80,13 +80,7 @@ def load_ab(filename = '../data/alpha_beta/0.npz'):
     
 if __name__ == '__main__':
     
-    runid = 0
-    i = 0
-    a1 = np.arange(10)
-    b1 = np.arange(10,20)
-    save_ab(runid, i, a1, b1)
-    print load_ab(runid, i)
-
+	load_ab(filename = '../data/alpha_beta/model1.npz')
     
     
     

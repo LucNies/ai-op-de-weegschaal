@@ -116,7 +116,7 @@ class IndependentTrainer(object):
 		price_beta = self.price_beta
 		)
 	
-	def load_ab(self, filename = '../data/alpha_beta/independent_ab.npz'):
+	def load_ab(self, filename = '../data/alpha_beta/independent_ab1.npz'):
 		
 		data = np.load(filename)
 		
@@ -135,7 +135,7 @@ class IndependentTrainer(object):
 		
 		data.close()
 	
-	def run(self, iterations = 5000):
+	def run(self, iterations = 100000):
 		
 		
 		for i in range(0, iterations):
@@ -163,6 +163,6 @@ class IndependentTrainer(object):
 
 
 if __name__ == '__main__':
-	trainer = IndependentTrainer(first_timer = True)
-	trainer.run()
+	trainer = IndependentTrainer(first_timer = False)
+	trainer.load_ab()
 

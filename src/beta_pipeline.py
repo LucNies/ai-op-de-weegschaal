@@ -17,7 +17,7 @@ headers = [5, 15, 35]
 adtypes = ['skyscraper', 'square', 'banner']
 colors = ['green', 'blue', 'red', 'black', 'white']
 productids = np.arange(10, 26, 1)
-prices = [15,25,35] 
+prices = [2.,3.] 
 
 pass_file = '../password.pass'
 f = open(pass_file, 'rb')
@@ -50,10 +50,10 @@ def run(iterations = 1000000, filename = '../data/alpha_beta/0.npz'):
 	
 	for i in range(0, iterations):
 		
-		randi = random.randint(0,10000)
+		randi = random.randint(0,9000)
 		randrunid = random.randint(0,10000)
 		
-		page_index = beta_util.draw_from_beta_distributions(alphas=alphas, betas=betas) # welke arm wint
+		page_index = beta_util.draw_from_beta_distributions(alphas=alphas, betas=betas, possible_pages = possible_pages) # welke arm wint
 		response = responder.respond_with_page(i=randi, runid=randrunid, page = possible_pages[page_index], teampw = teampw)
 		
 		success = response['effect']['Success'] # 1 of 0
@@ -70,6 +70,7 @@ def run(iterations = 1000000, filename = '../data/alpha_beta/0.npz'):
 	util.update_progress(1)
 	    
 
-
+if __name__ == '__main__':
+	run()
     
 

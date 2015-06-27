@@ -9,3 +9,4 @@ src/*.pyc
 *.txt
 data/alpha_beta/0.npz
 *.xlsx
+*.npz
