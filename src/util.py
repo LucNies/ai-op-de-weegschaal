@@ -55,4 +55,4 @@ def load_profit(filename =  '../data/revenue/revenues.txt'):
 	lines = f.readlines();
 	
 	return int(lines[len(lines)-1])
-		
+

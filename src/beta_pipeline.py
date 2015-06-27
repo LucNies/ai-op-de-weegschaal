@@ -13,11 +13,12 @@ import beta_utilities as beta_util
 import util
 import os
 
-headers = [5, 15, 35]
-adtypes = ['skyscraper', 'square', 'banner']
-colors = ['green', 'blue', 'red', 'black', 'white']
+headers = [5]
+adtypes = ['skyscraper', 'square']
+colors = ['green', 'blue', 'red', 'white']
 productids = np.arange(10, 26, 1)
-prices = [2.,3.] 
+prices = [10,15,20,25,30,35,40] 
+
 
 pass_file = '../password.pass'
 f = open(pass_file, 'rb')
@@ -31,16 +32,16 @@ possible_pages = beta_util.create_possible_pages(headers=headers, adtypes=adtype
 
 
 util.update_progress(0)
-print len(possible_pages)
 
 
 
 
-def run(iterations = 1000000, filename = '../data/alpha_beta/0.npz'):
+def run(iterations = 350000, filename = '../data/alpha_beta/1.npz'):
 	
 	
 	
 	if not os.path.isfile(filename):
+         
 		alphas = np.ones(len(possible_pages))
 		betas = np.ones(len(possible_pages))
 		revenue = 0
@@ -49,28 +50,34 @@ def run(iterations = 1000000, filename = '../data/alpha_beta/0.npz'):
 		revenue = util.load_profit()
 	
 	for i in range(0, iterations):
-		
-		randi = random.randint(0,9000)
-		randrunid = random.randint(0,10000)
-		
-		page_index = beta_util.draw_from_beta_distributions(alphas=alphas, betas=betas, possible_pages = possible_pages) # welke arm wint
-		response = responder.respond_with_page(i=randi, runid=randrunid, page = possible_pages[page_index], teampw = teampw)
-		
-		success = response['effect']['Success'] # 1 of 0
-		
-		alphas, betas = beta_util.update_alphas_betas(index=page_index, success = success, price = possible_pages[page_index]['price'], alphas = alphas, betas = betas)
-		revenue = revenue + success*possible_pages[page_index]['price']
-		
-		if i%10 == 0:
-			beta_util.save_ab(alphas, betas)
-			util.save_profit(revenue)
-		
-		util.update_progress(i/iterations)
+         randi = random.randint(0,9000)
+         randrunid = random.randint(0,10000)
+        		
+         page_index = beta_util.draw_from_beta_distributions(alphas=alphas, betas=betas, possible_pages = possible_pages) # welke arm wint
+         bla = 0
+         while bla<50:
+              try:
+                  response = responder.respond_with_page(i=randi, runid=randrunid, page = possible_pages[page_index], teampw = teampw)
+              except Exception:
+                  
+                  bla = bla+1
+                  continue
+              break
+         success = response['effect']['Success'] # 1 of 0
+        		
+         alphas, betas = beta_util.update_alphas_betas(index=page_index, success = success, price = possible_pages[page_index]['price'], alphas = alphas, betas = betas)
+         revenue = revenue + success*possible_pages[page_index]['price']
+        		
+         if i%100 == 0:
+             beta_util.save_ab(alphas, betas)
+             util.save_profit(revenue)
+         util.update_progress(i/iterations)
 		
 	util.update_progress(1)
 	    
 
 if __name__ == '__main__':
 	run()
+
     
 

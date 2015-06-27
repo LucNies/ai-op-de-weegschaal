@@ -116,7 +116,7 @@ class IndependentTrainer(object):
 		price_beta = self.price_beta
 		)
 	
-	def load_ab(self, filename = '../data/alpha_beta/independent_ab1.npz'):
+	def load_ab(self, filename = '../data/alpha_beta/independent_ab.npz'):
 		
 		data = np.load(filename)
 		

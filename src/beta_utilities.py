@@ -56,7 +56,7 @@ def update_alphas_betas(index, success, alphas, betas, price):
         
     return alphas, betas
     
-def save_ab(alphas, betas, file_path = '../data/alpha_beta/', i = 0):
+def save_ab(alphas, betas, file_path = '../data/alpha_beta/', i = 1):
       
         
         if not os.path.exists(file_path):
@@ -67,7 +67,7 @@ def save_ab(alphas, betas, file_path = '../data/alpha_beta/', i = 0):
         np.savez(filename, alphas=alphas, betas=betas)
 
 
-def load_ab(filename = '../data/alpha_beta/0.npz'):
+def load_ab(filename = '../data/alpha_beta/1.npz'):
    
     
     data = np.load(filename)
@@ -80,7 +80,7 @@ def load_ab(filename = '../data/alpha_beta/0.npz'):
     
 if __name__ == '__main__':
     
-	load_ab(filename = '../data/alpha_beta/model1.npz')
+
     
     
     
