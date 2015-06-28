@@ -11,8 +11,7 @@ import requests
 class ContextGetter(object):
     
     
-    def __init__(self, runid, url = 'http://krabspin.uci.ru.nl/getcontext.json/', teamid = 'PyBandits', 
-                 pass_file = '../password.pass', start = 0, max_calls = 10000):
+    def __init__(self, runid, url = 'http://krabspin.uci.ru.nl/getcontext.json/', teamid = 'PyBandits', pass_file = '../password.pass', start = 0, max_calls = 10000):
         f = open(pass_file, 'rb')
         teampw = f.next()
         self.url = url
@@ -34,8 +33,9 @@ class ContextGetter(object):
             return context
         
     
-    def call(self, i):
+    def call(self, i, runid):
         self.arguments['i'] = i
+	self.arguments['runid'] = runid
         context = requests.get(self.url, params = self.arguments).json()
         return context['context']
 

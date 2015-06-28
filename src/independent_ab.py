@@ -17,7 +17,7 @@ headers = [5, 15, 35]
 adtypes = ['skyscraper', 'square', 'banner']
 colors = ['green', 'blue', 'red', 'black', 'white']
 productids = np.arange(10, 26, 1)
-prices = [25,35,45]
+prices = np.array([25,35,45])
 
 class IndependentTrainer(object):
 	
@@ -72,7 +72,7 @@ class IndependentTrainer(object):
 		product = productids[product_i]
 
 		#get price
-		price_dist = [beta.rvs(self.price_alpha[i], self.price_beta[i]) for i in range(len(prices))]
+		price_dist = [beta.rvs(self.price_alpha[i], self.price_beta[i]) for i in range(len(prices))]*(prices/50.0)
 		price_i = price_dist.index(max(price_dist))
 		price = prices[price_i]		
 		
@@ -82,18 +82,18 @@ class IndependentTrainer(object):
 
 		price = prices[indexes[4]]
 		if succes:
-			self.header_alpha[indexes[0]] += float(1*price/50)
-			self.adtype_alpha[indexes[1]] += float(1*price/50)
-			self.color_alpha[indexes[2]] += float(1*price/50)
-			self.product_alpha[indexes[3]] += float(1*price/50)
-			self.price_alpha[indexes[4]] += float(1*price/50)
+			self.header_alpha[indexes[0]] += 1
+			self.adtype_alpha[indexes[1]] += 1
+			self.color_alpha[indexes[2]] += 1
+			self.product_alpha[indexes[3]] += 1
+			self.price_alpha[indexes[4]] += 1
 			
 		else:
-			self.header_beta[indexes[0]] += float(1*price/50)
-			self.adtype_beta[indexes[1]] += float(1*price/50)
-			self.color_beta[indexes[2]] += float(1*price/50)
-			self.product_beta[indexes[3]] += float(1*price/50)
-			self.price_beta[indexes[4]] += float(1*price/50)
+			self.header_beta[indexes[0]] += 1
+			self.adtype_beta[indexes[1]] += 1
+			self.color_beta[indexes[2]] += 1
+			self.product_beta[indexes[3]] += 1
+			self.price_beta[indexes[4]] += 1
 		
 	def save_ab(self, file_path = '../data/alpha_beta/'):
 		
@@ -135,7 +135,7 @@ class IndependentTrainer(object):
 		
 		data.close()
 	
-	def run(self, iterations = 100000):
+	def run(self, iterations = 200000):
 		
 		
 		for i in range(0, iterations):
@@ -163,6 +163,6 @@ class IndependentTrainer(object):
 
 
 if __name__ == '__main__':
-	trainer = IndependentTrainer(first_timer = False)
-	trainer.load_ab()
+	trainer = IndependentTrainer(first_timer = True)
+	trainer.run()
 

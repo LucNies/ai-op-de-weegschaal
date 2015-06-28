@@ -11,3 +11,7 @@ data/alpha_beta/0.npz
 *.xlsx
 *.npz
 data/alpha_beta/0.npz
+*.p
+*.csv
+data/plots/age_plot.png
+*.png

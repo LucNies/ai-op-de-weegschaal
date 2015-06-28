@@ -11,11 +11,19 @@ import responder
 from scipy.stats import beta
 import numpy as np
 import matplotlib.pyplot as plt
+import os
+import json
+from json import JSONDecoder
+
 
 if __name__ == '__main__':
-    a, b = 1 , 1
-    lijst  = beta.rvs(a,b, size = 1000)
-    print lijst
-    plt.hist(lijst)
-    
-    
+	path = "../context/"
+	file_names = os.listdir(path)	
+
+	
+
+	f = open(path+file_names[0], 'r')
+	content = json.load(f)
+	print "loaded"
+
+	
