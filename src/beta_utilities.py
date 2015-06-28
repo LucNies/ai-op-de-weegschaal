@@ -66,6 +66,15 @@ def save_ab(alphas, betas, file_path = '../data/alpha_beta/', i = 1):
 
         np.savez(filename, alphas=alphas, betas=betas)
 
+def save_ab_to_filename(alphas, betas, file_path = '../data/alpha_beta/', name = 'training'):
+      
+        
+        if not os.path.exists(file_path):
+            os.makedirs(file_path)
+
+        filename = file_path + name        
+
+        np.savez(filename, alphas=alphas, betas=betas)
 
 def load_ab(filename = '../data/alpha_beta/1.npz'):
    
@@ -79,7 +88,7 @@ def load_ab(filename = '../data/alpha_beta/1.npz'):
 
     
 if __name__ == '__main__':
-    
+    print 'hoi'
 
     
     

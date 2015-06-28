@@ -23,35 +23,31 @@ pass_file = '../password.pass'
 f = open(pass_file, 'rb')
 teampw = f.next() 
 
-# aantal samples waar op getrained wordt
-iterations = 10
 
 #maak pagina's
 possible_pages = beta_util.create_possible_pages(headers=headers, adtypes=adtypes, colors=colors, productids=productids, prices=prices) 
 
-def train(runIds = 15):
+def train(iteration_rounds = 10, iterations = 20000, filename = 'training'):
     print 'starting training'
     
-    run_ids_ran = []  
     alpha_list = []
     beta_list = []
     
-    for q in range(1,runIds+1):
+    for q in range(1,iteration_rounds+1):
         alphas = np.ones(len(possible_pages))
         betas = np.ones(len(possible_pages))
-        randrunid = random.randint(0,10000)
+        print 'Starting round ' + str(q)
         
-        while randrunid in run_ids_ran:
-            randrunid = random.randint(0,10000)
-        run_ids_ran.append(randrunid)
         
-        for i in range(0,10000):
+        for i in range(0,iterations):
+            randrunid = random.randint(0,9900)
+            randi = random.randint(0,9000)
             page_index = beta_util.draw_from_beta_distributions(alphas=alphas, betas=betas, possible_pages = possible_pages) # welke arm wint
             
             bla = 0
             while bla<50:
                  try:
-                     response = responder.respond_with_page(i=i, runid=randrunid, page = possible_pages[page_index], teampw = teampw)
+                     response = responder.respond_with_page(i=randi, runid=randrunid, page = possible_pages[page_index], teampw = teampw)
                  except Exception:
                      
                      bla = bla+1
@@ -60,19 +56,19 @@ def train(runIds = 15):
              
             success = response['effect']['Success'] # 1 of 0
             alphas, betas = beta_util.update_alphas_betas(index=page_index, success = success, price = possible_pages[page_index]['price'], alphas = alphas, betas = betas)
-            util.update_progress(i/10000)
+            util.update_progress(i/iterations)
             
         alpha_list.append(alphas)
         beta_list.append(betas)
         util.update_progress(1)
-        print 'runId ' + str(q) + ' of ' + str(runIds) + ' finished.'
+        print 'Round ' + str(q) + ' of ' + str(iteration_rounds) + ' finished.'
             
     alpha_list = np.array(alpha_list)
     beta_list = np.array(beta_list)
     
     final_alphas = alpha_list.mean(axis=0)
     final_betas = beta_list.mean(axis=0)
-    beta_util.save_ab(final_alphas, final_betas)
+    beta_util.save_ab_to_filename(final_alphas, final_betas, filename)
     print 'training complete' 
     
 if __name__ == '__main__':
