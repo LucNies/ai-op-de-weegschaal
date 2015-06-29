@@ -29,7 +29,7 @@ possible_pages = beta_util.create_possible_pages(headers=headers, adtypes=adtype
 
 def test_model(ab_path = '../data/alpha_beta/training.npz'):
     print 'starting training'
-    alphas,betas = beta_util.load_ab(ab_path)
+    alphas,betas = beta_util.load_ab(filename=ab_path)
     for q in range(10001,10101):
        
         print 'Starting runId ' + str(q)
