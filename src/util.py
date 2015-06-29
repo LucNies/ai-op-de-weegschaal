@@ -40,7 +40,7 @@ def save_profit(revenue, file_path = '../data/revenue/'):
 	if not os.path.exists(file_path):
 		os.makedirs(file_path)
 	
-	filename = file_path + 'revenues.txt'
+	filename = file_path + 'revenues_context.txt'
 	if not os.path.exists(filename):
 		f = open(filename, 'w')
 	else:
@@ -49,7 +49,7 @@ def save_profit(revenue, file_path = '../data/revenue/'):
 	f.write(str(revenue) + '\n')
 	f.close()
 
-def load_profit(filename =  '../data/revenue/revenues.txt'):
+def load_profit(filename =  '../data/revenue/revenues_context.txt'):
 	
 	f = open(filename, 'r')
 	lines = f.readlines();

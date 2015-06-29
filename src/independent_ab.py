@@ -17,7 +17,7 @@ headers = [5, 15, 35]
 adtypes = ['skyscraper', 'square', 'banner']
 colors = ['green', 'blue', 'red', 'black', 'white']
 productids = np.arange(10, 26, 1)
-prices = np.array([25,35,45])
+prices = np.arange(5, 51, 5)
 
 class IndependentTrainer(object):
 	
@@ -73,7 +73,7 @@ class IndependentTrainer(object):
 
 		#get price
 		price_dist = [beta.rvs(self.price_alpha[i], self.price_beta[i]) for i in range(len(prices))]*(prices/50.0)
-		price_i = price_dist.index(max(price_dist))
+		price_i = np.argmax(price_dist)
 		price = prices[price_i]		
 		
 		return {'header': header, 'adtype': adtype, 'color': color, 'productid': product, 'price': price}, [header_i, adtype_i, color_i, product_i, price_i]
@@ -152,7 +152,7 @@ class IndependentTrainer(object):
 
 			self.revenue += success*page['price']
 			
-			if i%10 == 0:
+			if i%1000 == 0:
 				self.save_ab()
 				util.save_profit(self.revenue)
 			
@@ -163,6 +163,6 @@ class IndependentTrainer(object):
 
 
 if __name__ == '__main__':
-	trainer = IndependentTrainer(first_timer = True)
+	trainer = IndependentTrainer(first_timer = False)
 	trainer.run()
 

@@ -16,7 +16,7 @@ import json
 from context_getter import ContextGetter
 from copy import deepcopy
 import csv
-import time
+
 headers = [5, 15]
 adtypes = ['skyscraper', 'square']
 colors = ['green', 'blue', 'red', 'white']
@@ -26,10 +26,10 @@ import pickle
 
 class ContextTrainer(object):
 	
-	def __init__(self, first_timer = True, pass_file = '../password.pass'):
+	def __init__(self, modelid, first_timer = True, pass_file = '../password.pass'):
 		f = open(pass_file, 'rb')
 		self.teampw = f.next()
-
+		self.modelid = modelid
 		f.close()
 		self.contextGetter = ContextGetter(0)
 		if first_timer:
@@ -37,7 +37,7 @@ class ContextTrainer(object):
 			self.revenue = 0
 		else:
 			self.load_ab()
-			self.revenue = 0 #util.load_profit()
+			self.revenue = util.load_profit()
 	
 	def create_aplha_beta(self):
 		
@@ -277,10 +277,8 @@ class ContextTrainer(object):
 	
 	def load_ab(self, filepath = '../data/alpha_beta/'):
 		
-		self.age_ab = pickle.load(open(filepath + 'age_ab_final.p','rb'))			
-		self.agent_ab = pickle.load(open(filepath + 'agent_ab_final.p','rb'))		
-		self.lan_ab = pickle.load(open(filepath + 'lan_ab_final.p','rb'))	
-		self.referer_ab = pickle.load(open(filepath + 'referer_ab_final.p','rb'))	
+		self.age_ab = pickle.load(open(filepath + 'age_ab'+ str(self.modelid) + '.p','rb'))			
+		self.agent = pickle.load(open(filepath + 'agent_ab'+ str(self.modelid) + '.p','rb'))		
 #		data = np.load(filename)
 #		
 #		self.header_alpha = data['header_alpha']
@@ -298,7 +296,7 @@ class ContextTrainer(object):
 #		
 #		data.close()
 	
-	def run(self, iterations = 50000):
+	def run(self, iterations = 80000):
 		
 		
 		for i in range(0, iterations):
@@ -321,98 +319,43 @@ class ContextTrainer(object):
 			
 			util.update_progress(i/iterations)
 			
-		util.update_progress(1)	
-	
-	def test_run(self, startid, endid, starti, endi):
-		
-		n_iter  = 0 
-		max_iter = (endid-startid)*(endi - starti)
-		util.update_progress(0)
-		start_time = time.time()
-		for runid in np.arange(startid, endid+1, 1):
-			for i in np.arange(starti, endi+1, 1):
-				context = self.contextGetter.call(i, runid)
-				page, pageindex = self.give_page(context)
-				response = responder.respond_with_page(i=i, runid=runid, page = page, teampw = self.teampw)				
-				success = response['effect']['Success']
-				self.revenue += success*page['price']
-				
-				self.update_alpha_betas(success, pageindex, context)
-				n_iter += 1
-				util.update_progress(n_iter/max_iter)
-				
-				if n_iter%10 == 0:
-					util.save_profit(self.revenue)
-		
-		util.update_progress(1)
-		time_elapsed = time.time()-start_time
-		av_time = float(time_elapsed/max_iter)
-		print "Total time: " + str(time_elapsed) + " av_time: " + str(av_time)
-			
-def inspect_models(factor = 5.0, filepath = '../data/alpha_beta/'):
-	
+		util.update_progress(1)		
+					
+def inspect_models(filepath = '../data/alpha_beta/'):
 	
 	summed_agent = pickle.load(open(filepath + 'agent_ab'+ str(0) + '.p','rb'))	
-	summed_age = pickle.load(open(filepath + 'age_ab'+ str(0) + '.p','rb'))	
-	summed_referer = pickle.load(open(filepath + 'referer_ab'+ str(0) + '.p', 'rb'))	
-	summed_lan = pickle.load(open(filepath + 'language_ab' + str(0) + '.p', 'rb'))
+	summed_age = pickle.load(open(filepath + 'age_ab'+ str(0) + '.p','rb'))		
 	
-	for i in np.arange(1,5,1):
+	for i in np.arange(1,10,1):
 		temp_agent = pickle.load(open(filepath + 'agent_ab'+ str(i) + '.p','rb'))	
 		temp_age =  pickle.load(open(filepath + 'age_ab'+ str(i) + '.p','rb'))
-		temp_referer = pickle.load(open(filepath + 'referer_ab'+ str(i) + '.p', 'rb'))	
-		temp_lan = pickle.load(open(filepath + 'language_ab' + str(i) + '.p', 'rb'))
 		for key in temp_agent:
 			summed_agent[key] = np.add(temp_agent[key], summed_agent[key])
 		for key in temp_age:
 			summed_age[key] = np.add(temp_age[key], summed_age[key])
-		for key in temp_referer:
-			summed_referer[key]= np.add(temp_referer[key], summed_referer[key])
-		for key in temp_lan:
-			summed_lan[key] = np.add(temp_lan[key], summed_lan[key])
 				
-	#agent
-	windows_ab = summed_agent['Windows']/factor
-	OSX_ab = summed_agent['OSX']/factor
-	linux_ab = summed_agent['Linux']/factor
-	mobile_ab = summed_agent['mobile']/factor
+	
+	windows_ab = summed_agent['Windows']/10.0
+	OSX_ab = summed_agent['OSX']/10.0
+	linux_ab = summed_agent['Linux']/10.0
+	mobile_ab = summed_agent['mobile']/10.0
 	
 	save_model_to_csv(windows_ab, 'windows')
 	save_model_to_csv(OSX_ab, 'OSX')
 	save_model_to_csv(linux_ab, 'linux')
 	save_model_to_csv(mobile_ab, 'mobile')
 	
-	#age
-	young_ab = summed_age['young']/factor
-	young_adult_ab= summed_age['young_adult']/factor
-	adult_ab = summed_age['adult']/factor
-	old_adult_ab = summed_age['old_adult']/factor
-	old_ab = summed_age['old']/factor
+	young_ab = summed_age['young']/10.0
+	young_adult_ab= summed_age['young_adult']/10.0
+	adult_ab = summed_age['adult']/10.0
+	old_adult_ab = summed_age['old_adult']/10
+	old_ab = summed_age['old']/10
 	
 	save_model_to_csv(young_ab, 'young')
 	save_model_to_csv(young_adult_ab, 'young_adult')
 	save_model_to_csv(adult_ab, 'adult')
 	save_model_to_csv(old_adult_ab, 'old_adult')
 	save_model_to_csv(old_ab, 'old')
-	
-	#referer
-	google_ab = summed_referer['Google']/factor
-	bing_ab = summed_referer['Bing']/factor
-	na_ab = summed_referer['NA']/factor
-	
-	save_model_to_csv(google_ab, 'google')
-	save_model_to_csv(bing_ab, 'bing')
-	save_model_to_csv(na_ab, 'na')
-	
-	#language
-	en_ab = summed_lan['EN']/factor
-	nl_ab = summed_lan['NL']/factor
-	ge_ab = summed_lan['GE']/factor
-	
-	save_model_to_csv(en_ab, 'eng')
-	save_model_to_csv(nl_ab, 'ned')
-	save_model_to_csv(ge_ab, 'ger')
-	
 	
 	print "done loading"
 
@@ -430,80 +373,12 @@ def save_model_to_csv(model, key, file_path = '../data/model_ab/ '):
 		writer = csv.writer(f)
 		writer.writerows(to_save)
 		f.close()		
-
-def combine_models(nrmodels = 5.0, filepath = '../data/alpha_beta/'):
+		
 	
-	summed_agent = pickle.load(open(filepath + 'agent_ab'+ str(0) + '.p','rb'))	
-	summed_age = pickle.load(open(filepath + 'age_ab'+ str(0) + '.p','rb'))	
-	summed_referer = pickle.load(open(filepath + 'referer_ab'+ str(0) + '.p', 'rb'))	
-	summed_lan = pickle.load(open(filepath + 'language_ab' + str(0) + '.p', 'rb'))
-	
-	for i in np.arange(1, 5, 1):
-		temp_agent = pickle.load(open(filepath + 'agent_ab'+ str(i) + '.p','rb'))	
-		temp_age =  pickle.load(open(filepath + 'age_ab'+ str(i) + '.p','rb'))
-		temp_referer = pickle.load(open(filepath + 'referer_ab'+ str(i) + '.p', 'rb'))	
-		temp_lan = pickle.load(open(filepath + 'language_ab' + str(i) + '.p', 'rb'))
-		for key in temp_agent:
-			summed_agent[key] = np.add(temp_agent[key], summed_agent[key])
-		for key in temp_age:
-			summed_age[key] = np.add(temp_age[key], summed_age[key])
-		for key in temp_referer:
-			summed_referer[key]= np.add(temp_referer[key], summed_referer[key])
-		for key in temp_lan:
-			summed_lan[key] = np.add(temp_lan[key], summed_lan[key])
-				
-	#agent
-	windows_ab = summed_agent['Windows']/nrmodels
-	OSX_ab = summed_agent['OSX']/nrmodels
-	linux_ab = summed_agent['Linux']/nrmodels
-	mobile_ab = summed_agent['mobile']/nrmodels
-	
-	save_model_to_csv(windows_ab, 'windows')
-	save_model_to_csv(OSX_ab, 'OSX')
-	save_model_to_csv(linux_ab, 'linux')
-	save_model_to_csv(mobile_ab, 'mobile')
-	
-	#age
-	young_ab = summed_age['young']/nrmodels
-	young_adult_ab= summed_age['young_adult']/nrmodels
-	adult_ab = summed_age['adult']/nrmodels
-	old_adult_ab = summed_age['old_adult']/nrmodels
-	old_ab = summed_age['old']/nrmodels
-	
-	save_model_to_csv(young_ab, 'young')
-	save_model_to_csv(young_adult_ab, 'young_adult')
-	save_model_to_csv(adult_ab, 'adult')
-	save_model_to_csv(old_adult_ab, 'old_adult')
-	save_model_to_csv(old_ab, 'old')
-	
-	#referer
-	google_ab = summed_referer['Google']/nrmodels
-	bing_ab = summed_referer['Bing']/nrmodels
-	na_ab = summed_referer['NA']/nrmodels
-	
-	save_model_to_csv(google_ab, 'google')
-	save_model_to_csv(bing_ab, 'bing')
-	save_model_to_csv(na_ab, 'na')
-	
-	#language
-	en_ab = summed_lan['EN']/nrmodels
-	nl_ab = summed_lan['NL']/nrmodels
-	ge_ab = summed_lan['GE']/nrmodels
-	
-	age_ab = {'young': young_ab, 'young_adult': young_adult_ab, 'adult': adult_ab, 'old_adult': old_adult_ab, 'old': old_ab}
-	agent_ab = {'OSX':OSX_ab, 'Windows':windows_ab, 'Linux': linux_ab, 'mobile': mobile_ab}
-	lan_ab = {'EN': en_ab, 'NL': nl_ab, 'GE': ge_ab}
-	referer_ab = {'Google':google_ab, 'Bing': bing_ab, 'NA': na_ab}
-	
-	pickle.dump(age_ab, open(filepath + 'age_ab_final.p' , 'wb'))
-	pickle.dump(agent_ab, open(filepath + 'agent_ab_final.p' , 'wb'))
-	pickle.dump(lan_ab, open(filepath + 'lan_ab_final.p' , 'wb'))
-	pickle.dump(referer_ab, open(filepath + 'referer_ab_final.p' , 'wb'))
 
 if __name__ == '__main__':
-	trainer = ContextTrainer(first_timer = False)
-	trainer.test_run(0 , 5000, 9980, 10000)
-#	for i in np.arange(1,5):
+#	inspect_models()
+#	for i in range(5):
 #		trainer = ContextTrainer(i, first_timer = True)
 #		trainer.run()
 

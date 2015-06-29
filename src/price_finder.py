@@ -109,7 +109,7 @@ class PriceFinder(object):
 		product_price_beta = self.product_price_beta
 		)
 	
-	def load_ab(self, filename = '../data/alpha_beta/pricechecker_ab_new_scaled.npz'):
+	def load_ab(self, filename = '../data/alpha_beta/pricechecker_ab_new_scaled2.npz'):
 		
 		data = np.load(filename)
 		
@@ -185,8 +185,8 @@ class PriceFinder(object):
 			
 		
 if __name__ == "__main__":
-	priceFinder = PriceFinder(first_time = True)
-	priceFinder.run()
-	priceFinder.inspect_prices()
+	priceFinder = PriceFinder(first_time = False)
+#	priceFinder.run()
+#	priceFinder.inspect_prices()
 	
 		
