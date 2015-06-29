@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Sat Jun 27 01:28:39 2015
+Created on Mon Jun 29 00:36:34 2015
 
 @author: Tom
 """
@@ -11,7 +11,7 @@ import random
 import responder
 import beta_utilities as beta_util
 import util
-
+import os
 
 headers = [5,15]
 adtypes = ['skyscraper', 'square']
@@ -27,26 +27,23 @@ teampw = f.next()
 #maak pagina's
 possible_pages = beta_util.create_possible_pages(headers=headers, adtypes=adtypes, colors=colors, productids=productids, prices=prices) 
 
-def train(iteration_rounds = 10, iterations = 25000, filename = 'training'):
+def test_model(ab_path = '../data/alpha_beta/training.npz'):
     print 'starting training'
-    alpha_list = []
-    beta_list = []
-    
-    for q in range(1,iteration_rounds+1):
-        alphas = np.ones(len(possible_pages))
-        betas = np.ones(len(possible_pages))
-        print 'Starting round ' + str(q)
+    alphas,betas = beta_util.load_ab(ab_path)
+    for q in range(10001,10101):
+       
+        print 'Starting runId ' + str(q)
+        runid = q
+        revenue = 0
         
-        
-        for i in range(0,iterations):
-            randrunid = random.randint(0,10000)
-            randi = random.randint(0,10000)
+        for i in range(0,10001):
+            
             page_index = beta_util.draw_from_beta_distributions(alphas=alphas, betas=betas, possible_pages = possible_pages) # welke arm wint
             
             bla = 0
             while bla<50:
                  try:
-                     response = responder.respond_with_page(i=randi, runid=randrunid, page = possible_pages[page_index], teampw = teampw)
+                     response = responder.respond_with_page(i=i, runid=runid, page = possible_pages[page_index], teampw = teampw)
                  except Exception:
                      
                      bla = bla+1
@@ -54,22 +51,20 @@ def train(iteration_rounds = 10, iterations = 25000, filename = 'training'):
                  break
              
             success = response['effect']['Success'] # 1 of 0
+            revenue = revenue + success*possible_pages[page_index]['price']            
+            
             alphas, betas = beta_util.update_alphas_betas(index=page_index, success = success, price = possible_pages[page_index]['price'], alphas = alphas, betas = betas)
-            util.update_progress(i/iterations)
+            util.update_progress(i/10001)
             
-        alpha_list.append(alphas)
-        beta_list.append(betas)
+        util.save_profit(revenue)
+        beta_util.save_ab(alphas, betas)
+        
         util.update_progress(1)
-        print 'Round ' + str(q) + ' of ' + str(iteration_rounds) + ' finished.'
+        print 'RunId ' + str(q) + ' of ' + str(10100) + ' finished.'
             
-    alpha_list = np.array(alpha_list)
-    beta_list = np.array(beta_list)
-    
-    final_alphas = alpha_list.mean(axis=0)
-    final_betas = beta_list.mean(axis=0)
-    beta_util.save_ab_to_filename(final_alphas, final_betas, name=filename)
+    beta_util.save_ab_to_filename(alphas, betas, name='testing')
     print 'training complete' 
     
 if __name__ == '__main__':
-    train()
-    
+    #test_model() #gecomment zodat hij niet per ongelijk een keer start.
+    print 'fk u dolphin!'
